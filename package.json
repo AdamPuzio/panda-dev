@@ -1,6 +1,6 @@
 {
   "name": "panda-dev",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Panda Developer Toolkit",
   "main": "panda-dev.js",
   "directories": {
@@ -26,7 +26,7 @@
     "glob": "^8.0.3",
     "inquirer": "^8.2.4",
     "lodash": "^4.17.21",
-    "panda-core": "^0.0.1",
+    "panda-core": "^0.0.2",
     "prettyjson": "^1.2.5",
     "winston": "^3.7.2"
   },
