@@ -1,0 +1,45 @@
+{
+  "name": "panda-dev",
+  "version": "0.0.1",
+  "description": "Panda Developer Toolkit",
+  "main": "panda-dev.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "panda-core": "./bin/panda-dev.js",
+    "test": "jest",
+    "lint": "standard",
+    "lint-fix": "standard --fix"
+  },
+  "bin": {
+    "panda-dev": "bin/panda-dev.js"
+  },
+  "author": "Adam Puzio",
+  "license": "MIT",
+  "dependencies": {
+    "cache-base": "^4.0.2",
+    "chalk": "^4.1.2",
+    "commander": "^9.2.0",
+    "ejs": "^3.1.8",
+    "fs-extra": "^10.1.0",
+    "glob": "^8.0.3",
+    "inquirer": "^8.2.4",
+    "lodash": "^4.17.21",
+    "panda-core": "^0.0.1",
+    "prettyjson": "^1.2.5",
+    "winston": "^3.7.2"
+  },
+  "devDependencies": {
+    "jest": "^28.1.0",
+    "standard": "^17.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdamPuzio/panda-dev.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AdamPuzio/panda-dev/issues"
+  },
+  "homepage": "https://github.com/AdamPuzio/panda-dev#readme"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "<%-data.name%>",
+  "namespace": "<%-data.namespace%>",
+  "type": "<%-data.type%>",
+  "dependencies": {},
+  "webView": "ui/<%-data.slug%>.html"
+}
