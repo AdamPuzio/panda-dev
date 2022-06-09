@@ -1,5 +1,7 @@
-const Panda = require('../../')
-const Scaffold = Panda.entity('scaffold')
+'use strict'
+
+const Core = require('panda-core')
+const Scaffold = Core.entity('scaffold')
 const path = require('path')
 
 const scaffoldList = [
@@ -50,6 +52,7 @@ module.exports = new Scaffold({
       data.route.split('/').join(path.sep),
       data.filename.slice(-3) == '.js' ? data.filename : data.filename + '.js'
     )
-    return await this.copyTemplate(data.scaffold, dest, opts)
+    const scaffold = 'route/templates/skeleton'
+    return await this.copyTemplate(scaffold, dest, opts)
   }
 })

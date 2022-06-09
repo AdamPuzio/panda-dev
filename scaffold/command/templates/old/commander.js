@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const Panda = require('panda')
-const Factory = Panda.Factory
 const commander = require('commander')
 const program = new commander.Command()
 
@@ -11,5 +10,4 @@ program
   .action(async (opts, cmd) => {
 
   })
-
-program.parse(process.argv)
+  .parse(process.argv)

@@ -1,5 +1,5 @@
-const Zeta = require('zeta')
-const Router = Zeta.Router
+const Panda = require('panda')
+const Router = Panda.Router
 const router = new Router()
 
 router.get('/', async (ctx, next) => {

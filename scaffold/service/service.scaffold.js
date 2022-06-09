@@ -1,27 +1,36 @@
-const Panda = require('../../')
-const Factory = Panda.Core.Factory
-const Scaffold = Panda.entity('scaffold')
-const Utility = Panda.Core.Utility
+'use strict'
 
-/* const scaffoldList = [
+const Core = require('panda-core')
+const Scaffold = Core.entity('scaffold')
+const Factory = Core.Factory
+const Utility = Core.Utility
+
+const scaffoldList = [
   {
-    name: 'Service',
+    name: 'Base Service',
+    desc: 'A simple, empty Service file with just the base structure',
     value: 'service/templates/service',
     default: true
   },
   {
-    name: 'App',
-    value: 'service/templates/app',
-    requiresPort: true
+    name: 'Example Service',
+    desc: 'An example Service that contains sample code on how actions and methods can be used',
+    value: 'service/templates/service-example'
   }
-] */
+]
 
 module.exports = new Scaffold({
   data: {
-    // scaffolds: scaffoldList
+    scaffolds: scaffoldList
   },
 
   prompt: [
+    {
+      type: 'list',
+      name: 'scaffold',
+      message: 'Service Type:',
+      choices: Utility.promptList(scaffoldList)
+    },
     {
       type: 'input',
       name: 'name',
@@ -43,33 +52,16 @@ module.exports = new Scaffold({
         return val === Utility.slugify(val)
       }
     }
-    /* {
-      type: 'list',
-      name: 'scaffold',
-      message: 'Service Type:',
-      choices: scaffoldList
-    },
-    {
-      type: 'number',
-      name: 'port',
-      message: 'Port:',
-      default: 5050,
-      when: function(answers) {
-        // only display when the matching item has 'requiresPort' param
-        const selectedItem = scaffoldList.find(({ value }) => value === answers.scaffold)
-        return selectedItem.requiresPort
-      }
-    } */
   ],
 
   build: async function (data, opts) {
     // copy the service file
     const dest = `app/services/${data.slug}.service.js`
-    await this.copyTemplate('service/templates/service', dest, data, opts)
+    await this.copyTemplate(data.scaffold, dest, data, opts)
     await Factory.addServiceToProjectJson({
       name: data.slug,
       base: '{PROJECT_PATH}',
-      path: `app/services/${data.slug}.service.js`
+      path: dest
     })
   }
 })

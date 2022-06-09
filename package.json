@@ -1,13 +1,13 @@
 {
   "name": "panda-dev",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Panda Developer Toolkit",
   "main": "panda-dev.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "panda-core": "./bin/panda-dev.js",
+    "panda-dev": "./bin/panda-dev.js",
     "test": "jest",
     "lint": "standard",
     "lint-fix": "standard --fix"
@@ -26,13 +26,19 @@
     "glob": "^8.0.3",
     "inquirer": "^8.2.4",
     "lodash": "^4.17.21",
-    "panda-core": "^0.0.2",
+    "panda-core": "^0.0.3",
     "prettyjson": "^1.2.5",
     "winston": "^3.7.2"
   },
   "devDependencies": {
     "jest": "^28.1.0",
     "standard": "^17.0.0"
+  },
+  "standard": {
+    "ignore": [
+      "scaffold/*",
+      "test/*"
+    ]
   },
   "repository": {
     "type": "git",

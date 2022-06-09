@@ -1,9 +1,10 @@
-const Panda = require('../../')
-const PandaCore = require('panda-core')
-const ctx = PandaCore.ctx
-const Factory = PandaCore.Factory
-const Utility = PandaCore.Utility
-const Scaffold = Panda.entity('scaffold')
+'use strict'
+
+const Core = require('panda-core')
+const ctx = Core.ctx
+const Factory = Core.Factory
+const Utility = Core.Utility
+const Scaffold = Core.entity('scaffold')
 const path = require('path')
 const _ = require('lodash')
 

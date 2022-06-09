@@ -1,18 +1,53 @@
 'use strict'
 
 const Core = require('panda-core')
+const ctx = Core.ctx
 const Scaffold = Core.entity('scaffold')
 const path = require('path')
 const fs = require('fs-extra')
 
+const context = { context: ctx.context }
+switch (ctx.context) {
+  case 'inPanda':
+    context.projectDir = ctx.PANDA_PATH
+    context.baseCommand = 'panda'
+    break
+  case 'inProject':
+    context.projectDir = ctx.PROJECT_PATH
+    break
+  case 'inPrivateLabel':
+    context.projectDir = ctx.PRIVATE_LABEL_PATH
+    context.baseCommand = ctx.label
+    break
+  case 'inPackage':
+    context.projectDir = ctx.PACKAGE_PATH
+    break
+}
+
+// if (!context.projectDir) throw new Error(`You need to be in a Project, Package or Library to perform this action`)
+// Factory.setProjectDir(context.projectDir)
+
 const scaffoldList = [
-  { name: 'Basic', value: 'command/templates/panda', default: true },
-  { name: 'Scaffold', value: 'command/templates/panda-scaffold', applyEntity: true }
+  { name: 'Basic', desc: 'A simple, no-frills command with just the base setup', value: 'command/templates/command', default: true },
+  { name: 'Scaffold', desc: 'A command that includes scaffolding setup', value: 'command/templates/scaffold', applyEntity: true }
 ]
 
+const tableFn = (arr) => {
+  const names = arr.map(a => a.name)
+  const maxLength = Math.max.apply(Math, names.map(function (el) { return el.length }))
+  const rs = []
+  arr.forEach((i) => {
+    const spacing = maxLength + 5 - i.name.length
+    const spacer = ' '.repeat(spacing > 0 ? spacing : 0)
+    const name = `${i.name}${spacer}${i.desc || ''}`
+    rs.push({ name, value: i.value })
+  })
+  return rs
+}
+
 const scaffold = new Scaffold({
-  name: 'Panda Command',
-  desc: 'Create Panda & PandaDev Commands',
+  name: 'Command',
+  desc: 'Create new Command',
 
   data: {
     scaffolds: scaffoldList
@@ -21,21 +56,20 @@ const scaffold = new Scaffold({
   prompt: [
     {
       type: 'list',
-      name: 'target',
-      message: 'Target Library:',
-      default: 'panda',
-      choices: [
-        { name: 'Panda', value: 'panda' },
-        { name: 'PandaDev', value: 'panda-dev' }
-      ]
+      name: 'scaffold',
+      message: 'Command Type:',
+      default: 'command/templates/panda',
+      choices: function (answers) {
+        return tableFn(scaffoldList)
+      }
     },
     {
       type: 'input',
       name: 'command',
       message: 'Command:',
       validate: async (val, answers) => {
-        const check = val.length > 1 && /^[a-zA-Z0-9-_]+$/.test(val)
-        return check || 'command must be at least 2 characters and alphanumeric (plus dash & underscore)'
+        const check = val.length > 1 && /^[a-zA-Z0-9-_:]+$/.test(val)
+        return check || 'command must be at least 2 characters and alphanumeric (plus dash, underscore and colon)'
       }
     },
     {
@@ -48,27 +82,23 @@ const scaffold = new Scaffold({
       }
     },
     {
-      type: 'list',
-      name: 'scaffold',
-      message: 'Command Type:',
-      default: 'command/templates/panda',
-      choices: function (answers) {
-        return scaffoldList
-      }
-    },
-    {
       type: 'string',
       name: 'entity',
       message: 'Entity Type:',
       // default: 'project',
       default: function (answers) {
-        return answers.command.startsWith('create-') ? answers.command.slice(7) : 'project'
+        return answers.command.split(':')[0]
       },
       when: function (answers) {
         // only display when the matching item has 'applyEntity' param
         const selectedItem = scaffoldList.find(({ value }) => value === answers.scaffold)
         return selectedItem.applyEntity
       }
+    },
+    {
+      type: 'confirm',
+      name: 'confirmInProject',
+      message: 'Add in-Project check?'
     },
     {
       type: 'list',
@@ -86,9 +116,10 @@ const scaffold = new Scaffold({
     const logger = this.logger
 
     // determine destination
-    const destBase = Core.ctx[data.target === 'panda' ? 'PANDA_PATH' : 'PANDA_DEV_PATH']
+    const destBase = context.projectDir
     const binDir = path.join(destBase, 'bin')
-    const filename = `${data.target}-${data.command}.js`
+    let filename = `${data.command}.js`
+    if (context.baseCommand) filename = `${context.baseCommand}-${filename}`
     const f = path.join(binDir, filename)
     logger.debug(`Command destination: ${f}`)
 
@@ -98,13 +129,13 @@ const scaffold = new Scaffold({
     // add command to entry
     if (data.binadd === 'no') return true
 
-    const entryFile = `${data.target}.js`
+    const entryFile = `${context.baseCommand}.js`
     const command = {
       command: data.command,
       desc: data.desc
     }
     if (data.binadd === 'hidden') command.options = { hidden: true }
-    await this.addCommandsToEntry(command, entryFile, { projectDir: destBase })
+    await this.addCommandsToEntry(command, entryFile, { projectDir: destBase, type: (data.binadd === 'yes' ? 'core' : 'internal') })
 
     return true
   },
@@ -140,7 +171,7 @@ const scaffold = new Scaffold({
           from: '/* +++ core commands +++ */ // do not remove',
           to: '  /* +++ internal commands +++ */ // do not remove'
         },
-        hidden: {
+        internal: {
           from: '/* +++ internal commands +++ */ // do not remove',
           to: '/* +++ shortcut commands +++ */ // do not remove'
         },
@@ -156,7 +187,7 @@ const scaffold = new Scaffold({
       const findTo = split.findIndex(el => el.includes(obj.to))
       const subStack = split.slice(findFrom + 1, findTo)
       commands.forEach((i) => {
-        const optsStr = ''
+        let optsStr = ''
         if (i.options) {
           if (i.options.hidden === true) opts.type = 'hidden'
           optsStr = `, ${JSON.stringify(i.options)}`

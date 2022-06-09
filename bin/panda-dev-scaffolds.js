@@ -9,21 +9,20 @@ program
   .description('get a list of available scaffolds')
   .option('--scaffold-source', 'Change the source scaffold directory')
   .option('-d, --debug [level]', 'Run in debug mode', false)
-  .action(async (opts, cmd) => {
-    const logger = cmd.logger
-    logger.debug('command: scaffolds')
-    const options = await Wasp.parse(cmd)
+  .action(async function (opts, cmd) {
+    this.debug('command: scaffolds')
 
-    logger.out('info', 'Scaffold List:', 'bold')
+    this.heading('Scaffold List:')
+
     const list = await Factory.getScaffoldList()
     Object.entries(list).forEach(([entity, scaffolds]) => {
-      logger.out('info', `${entity}`, 'bold.magenta')
+      this.logger.out(`${entity}`, { level: 'info', styles: 'bold.magenta' })
       Object.entries(scaffolds).forEach(([scaffold, scaffoldInfo]) => {
         const info = scaffoldInfo.content || {}
         const scaffoldName = info.name || scaffold
         const slug = scaffold === entity ? scaffold : `${entity}/${scaffold}`
-        logger.out('info', `  ${scaffoldName} [${slug}]`, 'green')
-        if (info.desc) logger.out('info', `    ${info.desc}`, 'gray')
+        this.logger.out(`  ${scaffoldName} [${slug}]`, { level: 'info', styles: 'green' })
+        if (info.desc) this.logger.out(`    ${info.desc}`, { level: 'info', styles: 'gray' })
       })
     })
   })

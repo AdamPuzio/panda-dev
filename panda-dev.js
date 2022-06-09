@@ -1,31 +1,20 @@
-'use strict'
+'use strict';
 
-const a = process.env.PANDA_PATHS; process.env.PANDA_PATHS = a.concat((a || '').split(';').find(e => e.startsWith(`panda-dev=`)) ? '' : `panda-dev=${require('path').dirname(__filename)};`)
+((a, b) => { process.env.PANDA_PATHS = (a || '').concat((a || '').split(';').find(e => e.startsWith(`${b}=`)) ? '' : `${b}=${require('path').dirname(__filename)};`) })(process.env.PANDA_PATHS, 'panda-dev')
 
+const EventEmitter = require('events')
 const Core = require('panda-core')
 
-let Logger
-
-class PandaDev {
+class PandaDev extends EventEmitter {
   constructor () {
+    if (PandaDev._instance) return PandaDev._instance
+    super()
+    PandaDev._instance = this
+
     this.initialized = true
   }
 
   Core = Core
-
-  ctx = Core.ctx
-
-  getLogger () {
-    // let's lazy load it
-    if (!Logger) Logger = require('./src/logger')
-    return Logger
-  }
-
-  entity (entity) {
-    return Core.entity(entity)
-  }
-
-  Wasp = Core.Wasp
 }
 
 module.exports = new PandaDev()

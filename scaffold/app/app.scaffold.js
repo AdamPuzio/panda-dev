@@ -1,7 +1,9 @@
-const Panda = require('../../')
-const Factory = Panda.Core.Factory
-const Scaffold = Panda.entity('scaffold')
-const Utility = Panda.Core.Utility
+'use strict'
+
+const Core = require('panda-core')
+const Factory = Core.Factory
+const Scaffold = Core.entity('scaffold')
+const Utility = Core.Utility
 
 const scaffoldList = [
   {
@@ -13,7 +15,7 @@ const scaffoldList = [
       {
         name: 'component',
         core: true,
-        base: "{PANDA_PATH}",
+        base: '{PANDA_PATH}',
         path: 'base/services/component.service.js'
       }
     ]
@@ -22,14 +24,14 @@ const scaffoldList = [
     name: 'API',
     value: 'api',
     defaultPort: 6005,
-    appCfg: { 
+    appCfg: {
       app: 'api',
       config: {
-        "path": "/api",
-  
-        "whitelist": [
-         "project.*",
-         "component.*"
+        path: '/api',
+
+        whitelist: [
+          'project.*',
+          'component.*'
         ]
       }
     },
@@ -54,7 +56,7 @@ module.exports = new Scaffold({
       name: 'name',
       message: 'App Name:',
       default: 'Example',
-      when: function(answers) {
+      when: function (answers) {
         return answers.scaffold === '--other--'
       },
       validate: async (val, answers) => {
@@ -66,7 +68,7 @@ module.exports = new Scaffold({
       type: 'input',
       name: 'slug',
       message: 'Service Slug:',
-      when: function(answers) {
+      when: function (answers) {
         return answers.scaffold === '--other--'
       },
       default: function (answers) {
@@ -84,7 +86,7 @@ module.exports = new Scaffold({
         const selectedItem = scaffoldList.find(({ value }) => value === answers.scaffold)
         return selectedItem.defaultPort
       },
-      when: function(answers) {
+      when: function (answers) {
         // only display when the matching item has 'requiresPort' param
         const selectedItem = scaffoldList.find(({ value }) => value === answers.scaffold)
         return selectedItem.defaultPort
@@ -94,25 +96,25 @@ module.exports = new Scaffold({
 
   build: async function (data, opts) {
     // copy the service file
-    //const dest = `app/services/${data.slug}.service.js`
-    //await this.copyTemplate('service/templates/service', dest, data, opts)
+    // const dest = `app/services/${data.slug}.service.js`
+    // await this.copyTemplate('service/templates/service', dest, data, opts)
     const selectedItem = scaffoldList.find(({ value }) => value === data.scaffold)
 
     const appCfg = selectedItem.appCfg
     appCfg.port = data.port
     await Factory.addAppToProjectJson(appCfg)
 
-    /*if (selectedItem.services) selectedItem.services.forEach((svc) => {
+    /* if (selectedItem.services) selectedItem.services.forEach((svc) => {
       await Factory.addServiceToProjectJson(svc)
-    })*/
-    for (let i=0; i<selectedItem.services.length; i++) {
+    }) */
+    for (let i = 0; i < selectedItem.services.length; i++) {
       const svc = selectedItem.services[i]
       await Factory.addServiceToProjectJson(svc)
     }
-    /*await Factory.addServiceToProjectJson({
+    /* await Factory.addServiceToProjectJson({
       name: data.slug,
       base: '{PROJECT_PATH}',
       path: `app/services/${data.slug}.service.js`
-    })*/
+    }) */
   }
 })

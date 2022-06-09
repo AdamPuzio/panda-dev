@@ -1,7 +1,9 @@
-const Panda = require('../../')
-const Scaffold = Panda.entity('scaffold')
-const Utility = Panda.Core.Utility
-const ctx = Panda.Core.ctx
+'use strict'
+
+const Core = require('panda-core')
+const Scaffold = Core.entity('scaffold')
+const Utility = Core.Utility
+const ctx = Core.ctx
 
 const projectJson = ctx.getProjectDetails()
 

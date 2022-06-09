@@ -1,7 +1,8 @@
-const Panda = require('../../')
-const Factory = Panda.Core.Factory
-const Scaffold = Panda.entity('scaffold')
-const Utility = Panda.Core.Utility
+'use strict'
+
+const Core = require('panda-core')
+const Scaffold = Core.entity('scaffold')
+const Utility = Core.Utility
 
 const scaffoldList = [
   {
