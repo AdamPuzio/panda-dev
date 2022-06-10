@@ -85,6 +85,9 @@ module.exports = new Scaffold({
   ],
 
   build: async function (data, opts) {
+    opts.projectDir = ctx.cwd
+    data['cfg-cmd'] = '<%-JSON.stringify(data || {})-%>'
+    
     // copy the component scaffold
     const dest = `app/ui/components/${data.slug}`
     await this.copy(data.scaffold, dest, opts)
